@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/awesome-tools/static/css/main.b100e6da.chunk.css",
+    "main.js": "/awesome-tools/static/js/main.5acf5d1e.chunk.js",
+    "main.js.map": "/awesome-tools/static/js/main.5acf5d1e.chunk.js.map",
+    "runtime-main.js": "/awesome-tools/static/js/runtime-main.d7881172.js",
+    "runtime-main.js.map": "/awesome-tools/static/js/runtime-main.d7881172.js.map",
+    "static/js/2.81329fe4.chunk.js": "/awesome-tools/static/js/2.81329fe4.chunk.js",
+    "static/js/2.81329fe4.chunk.js.map": "/awesome-tools/static/js/2.81329fe4.chunk.js.map",
+    "index.html": "/awesome-tools/index.html",
+    "precache-manifest.6786c47a5d0485d51daeca07826dbe40.js": "/awesome-tools/precache-manifest.6786c47a5d0485d51daeca07826dbe40.js",
+    "service-worker.js": "/awesome-tools/service-worker.js",
+    "static/css/main.b100e6da.chunk.css.map": "/awesome-tools/static/css/main.b100e6da.chunk.css.map",
+    "static/media/logo.svg": "/awesome-tools/static/media/logo.25bf045c.svg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.d7881172.js",
+    "static/js/2.81329fe4.chunk.js",
+    "static/css/main.b100e6da.chunk.css",
+    "static/js/main.5acf5d1e.chunk.js"
+  ]
+}
