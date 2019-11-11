@@ -1,25 +1,35 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import {
+  BrowserRouter as Router,
+  Route,
+  // Link,
+  Switch,
+  // Redirect,
+  // useLocation
+} from 'react-router-dom';
+
+import './assets/index.scss';
+import "bootstrap/dist/css/bootstrap.min.css";
+import "shards-ui/dist/css/shards.min.css";
+
+import { MasterLayout } from './components/layouts';
+import ErrorPage from './views/ErrorPage';
+import MobTimer from './views/MobTimer';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Hello to React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <MasterLayout>
+        <Switch>
+          <Route exact path="/">
+            <MobTimer />
+          </Route>
+          <Route path="*">
+            <ErrorPage />
+          </Route>
+        </Switch>
+      </MasterLayout>
+    </Router>
   );
 }
 
