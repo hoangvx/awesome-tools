@@ -15,14 +15,18 @@ import "shards-ui/dist/css/shards.min.css";
 import { MasterLayout } from './components/layouts';
 import ErrorPage from './views/ErrorPage';
 import MobTimer from './views/MobTimer';
+import ScrumEstimationCard from './views/ScrumEstimationCard';
 
 function App() {
   return (
     <Router>
       <MasterLayout>
         <Switch>
-          <Route exact path="/">
+          <Route exact path="/mob">
             <MobTimer />
+          </Route>
+          <Route exact path="/">
+            <ScrumEstimationCard />
           </Route>
           <Route path="*">
             <ErrorPage />
