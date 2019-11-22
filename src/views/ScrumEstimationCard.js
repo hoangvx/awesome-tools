@@ -11,7 +11,10 @@ class ScrumEstimationCard extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      sessions: [],
+      sessions: [
+        "demo1",
+        "demo2"
+      ],
       title: '',  
       members: []
     }
@@ -20,11 +23,12 @@ class ScrumEstimationCard extends Component {
   addNewSession = () => {
     let { sessions, title } = this.state;
     sessions.push(title);
-    this.setState({ sessions });
+    title = '';
+    this.setState({ sessions, title });
   }
 
   render() {
-    const { title } = this.state;
+    const { title, sessions } = this.state;
     return (
       <Container>
         <Row>
@@ -48,7 +52,18 @@ class ScrumEstimationCard extends Component {
         <Row className="">
           <Col>
             <ListGroup>
-              <ListGroupItem>de</ListGroupItem>
+              {sessions.map(item => (
+                <ListGroupItem>
+                  <Row className="align-items-center">
+                    <Col>
+                      <h5 className="mb-0">{item}</h5>
+                    </Col>
+                    <Col className="text-right">
+                      <Button outline size="sm">X</Button>
+                    </Col>
+                  </Row>
+                </ListGroupItem>
+              ))}
             </ListGroup>
           </Col>
         </Row>
