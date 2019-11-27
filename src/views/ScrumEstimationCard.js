@@ -5,10 +5,7 @@ import {
   FormInput,
   ListGroup,
   ListGroupItem,
-  ListGroupItemText
 } from 'shards-react';
-
-const SESSION_KEY = 'playapointcard';
 
 const points = [
   0, 1, 2, 3, 5,

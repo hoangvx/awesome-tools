@@ -22,16 +22,16 @@ function App() {
     <Router>
       <MasterLayout>
         <Switch>
-          <Route exact path="/">
-            <Redirect to="/estimation_card" />
+          <Route exact path="/awesome-tools">
+            <Redirect to="/awesome-tools/estimation_card" />
           </Route>
-          <Route exact path="/mob">
+          <Route exact path="/awesome-tools/mob">
             <MobTimer />
           </Route>
-          <Route exact path="/estimation_card">
+          <Route exact path="/awesome-tools/estimation_card">
             <ScrumEstimationCard />
           </Route>
-          <Route path="*">
+          <Route path="/awesome-tools/*">
             <ErrorPage />
           </Route>
         </Switch>
