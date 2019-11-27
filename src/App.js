@@ -4,7 +4,7 @@ import {
   Route,
   // Link,
   Switch,
-  // Redirect,
+  Redirect,
   // useLocation
 } from 'react-router-dom';
 
@@ -22,10 +22,13 @@ function App() {
     <Router>
       <MasterLayout>
         <Switch>
+          <Route exact path="/">
+            <Redirect to="/estimation_card" />
+          </Route>
           <Route exact path="/mob">
             <MobTimer />
           </Route>
-          <Route exact path="/">
+          <Route exact path="/estimation_card">
             <ScrumEstimationCard />
           </Route>
           <Route path="*">

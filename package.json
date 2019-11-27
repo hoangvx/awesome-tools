@@ -9,6 +9,7 @@
     "bootstrap": "^4.3.1",
     "firebase": "^7.4.0",
     "gh-pages": "^2.1.1",
+    "js-cookie": "^2.2.1",
     "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "prop-types": "^15.7.2",
@@ -16,7 +17,8 @@
     "react-dom": "^16.11.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.2.0",
-    "shards-react": "^1.0.3"
+    "shards-react": "^1.0.3",
+    "uuid": "^3.3.3"
   },
   "scripts": {
     "start": "react-scripts start",
