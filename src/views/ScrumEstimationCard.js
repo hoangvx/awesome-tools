@@ -5,6 +5,7 @@ import {
   FormInput,
   ListGroup,
   ListGroupItem,
+  Modal, ModalBody, ModalHeader
 } from 'shards-react';
 
 const points = [
@@ -18,9 +19,10 @@ class ScrumEstimationCard extends Component {
     super(props)
     this.state = {
       points,
-      number_of_players: 3,
+      number_of_players: 4,
       histories: [],
-      selected_point: [undefined, undefined, undefined]
+      selected_point: [undefined, undefined, undefined],
+      open: false
     }
   }
 
@@ -45,13 +47,37 @@ class ScrumEstimationCard extends Component {
   }
 
   render() {
-    const { points, number_of_players, histories, selected_point } = this.state;
+    const { points, number_of_players, histories, selected_point, open } = this.state;
     const isCal = selected_point.indexOf(undefined) === -1;
+    
     return (
       <Container>
         <Row>
-          <Col className="mt-4 px-0">
+          <Col xs="10" className="mt-4 px-0">
             <h1 className="text-info">Point Card</h1>
+          </Col>
+          <Col xs="2" className="mt-4 px-0 d-flex justify-content-center align-items-center">
+            <Button outline theme="light" size="sm" onClick={() => this.setState({ open: true })}>?</Button>
+            <Modal className="modal-dialog-centered" open={open} toggle={() => this.setState({ open: !open })}>
+              <ModalHeader>How To Use!</ModalHeader>
+              <ModalBody>
+                <span>
+                  <strong>1:</strong> Update number of player to fix your team size
+                </span>
+                <br/>
+                <span>
+                  <strong>2:</strong> Press on the point that choosed
+                </span>
+                <br/>
+                <span>
+                  <strong>3:</strong> Average point will display when you  enter all member's point
+                </span>
+                <br/>
+                <span>
+                  <strong>4:</strong> You can start over by click on button at the bottom
+                </span>
+              </ModalBody>
+            </Modal>
           </Col>
         </Row>
         {/* Welcome Panel for first visited */}

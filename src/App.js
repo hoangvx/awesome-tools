@@ -1,6 +1,7 @@
 import React from 'react';
 import {
-  BrowserRouter as Router,
+  // BrowserRouter as Router,
+  HashRouter as Router,
   Route,
   // Link,
   Switch,
@@ -22,16 +23,16 @@ function App() {
     <Router>
       <MasterLayout>
         <Switch>
-          <Route exact path="/awesome-tools">
-            <Redirect to="/awesome-tools/estimation_card" />
+          <Route exact path="/">
+            <Redirect to="/estimation_card" />
           </Route>
-          <Route exact path="/awesome-tools/mob">
+          <Route exact path="/mob">
             <MobTimer />
           </Route>
-          <Route exact path="/awesome-tools/estimation_card">
+          <Route exact path="/estimation_card">
             <ScrumEstimationCard />
           </Route>
-          <Route path="/awesome-tools/*">
+          <Route path="/*">
             <ErrorPage />
           </Route>
         </Switch>
