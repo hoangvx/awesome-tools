@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import { 
   Container, Row, Col,
   Button,
-  FormInput,
-  InputGroup, InputGroupAddon,
   ListGroup, ListGroupItem,
-  Modal, ModalBody, ModalHeader
+  Modal, ModalBody, ModalHeader,
 } from 'shards-react';
+
+import Select from 'react-select';
 
 import Cookies from 'js-cookie';
 import toastr from 'toastr';
@@ -20,12 +20,23 @@ const points = [
   55, 89, 999
 ]
 
+const members_option = [
+  { value: 2, label: '2' },
+  { value: 3, label: '3' },
+  { value: 4, label: '4' },
+  { value: 5, label: '5' },
+  { value: 6, label: '6' },
+  { value: 7, label: '7' },
+  { value: 8, label: '8' },
+  { value: 9, label: '9' }
+]
+
 class ScrumEstimationCard extends Component {
   constructor(props) {
     super(props)
     this.state = {
       points,
-      number_of_players: 4,
+      number_of_players: members_option[2],
       histories: [],
       selected_point: [undefined, undefined, undefined, undefined],
       open: false
@@ -34,11 +45,13 @@ class ScrumEstimationCard extends Component {
 
   playNewRound = () => {
     let { histories, selected_point } = this.state;
-    if (selected_point.indexOf(undefined) === -1) {
+    const idxs = selected_point.map(p => points.indexOf(p));
+    const isValid = _.max(idxs) - _.min(idxs) < 3;
+    if (isValid && selected_point.indexOf(undefined) === -1) {
       histories.push(selected_point);
     }
     this.setState({
-      selected_point: Array(Number(this.state.number_of_players)).fill(undefined),
+      selected_point: Array(Number(this.state.number_of_players.value)).fill(undefined),
       histories
     })
   }
@@ -53,8 +66,8 @@ class ScrumEstimationCard extends Component {
   }
 
   setDefault = () => {
-    Cookies.set(DEFAULT_NUMBER_OF_PLAYPER, this.state.number_of_players);
-    toastr.info(`Number of player's defaut is set to ${this.state.number_of_players}`);
+    Cookies.set(DEFAULT_NUMBER_OF_PLAYPER, this.state.number_of_players.value);
+    toastr.info(`Number of player's defaut is set to ${this.state.number_of_players.value}`);
   }
 
   
@@ -68,13 +81,18 @@ class ScrumEstimationCard extends Component {
     document.title = 'Estimation Card | Awesome Tools';
     const number_of_players = Number(Cookies.get(DEFAULT_NUMBER_OF_PLAYPER)) || 4;
     this.setState({ 
-      number_of_players,
+      number_of_players: { value: number_of_players, label: number_of_players },
       selected_point: Array(Number(number_of_players)).fill(undefined),
     })
   }
   render() {
     const { points, number_of_players, histories, selected_point, open } = this.state;
     const isCal = selected_point.indexOf(undefined) === -1;
+    const idxs = selected_point.map(p => points.indexOf(p));
+    const isValid = _.max(idxs) - _.min(idxs) < 3;
+    if (isCal && !isValid) {
+      toastr.error("Invalid Points Set")
+    }
     return (
       <Container>
         <Row>
@@ -107,33 +125,36 @@ class ScrumEstimationCard extends Component {
         </Row>
         {/* Welcome Panel for first visited */}
         <Row className="mb-3">
-          <Col xs="12" className="px-0">
-            <label className="text-secondary">Change number of players</label>
-            <InputGroup>
-              <FormInput
-                type="number"
-                value={number_of_players}
-                onChange={({ target: { value: number_of_players } }) => this.setState({ number_of_players, selected_point: Array(Number(number_of_players)).fill(undefined) })}
-              />
-              <InputGroupAddon type="append">
-                <Button theme="light" onClick={() => this.setDefault()}>Set As Default</Button>
-              </InputGroupAddon>
-            </InputGroup>
+          <label className="text-secondary">Change number of players</label>
+          <Col xs="8" className="px-0">
+            <Select 
+              options={members_option}
+              value={ number_of_players }
+              onChange={
+                number_of_players => this.setState(
+                  {
+                    number_of_players,
+                    selected_point: Array(Number(number_of_players.value)).fill(undefined),
+                  })
+              }/>
+          </Col>
+          <Col xs="4" className="px-0">
+            <Button block theme="light" onClick={() => this.setDefault()}>Save</Button>
           </Col>
         </Row>
         { number_of_players && (
           <Row className="mb-3">
-            {!isCal && selected_point.map((p, idx) => (
+            {!(isCal && isValid) && selected_point.map((p, idx) => (
               <Col key={idx} className="p-0" style={{ height: '10vh' }}>
                 <Button 
-                  theme="light" disabled squared block className="h-100"
+                  theme={ !isValid && isCal && (p === _.min(selected_point) || p === _.max(selected_point)) ? 'danger': 'secondary' } disabled squared block className="h-100 border-light"
                   style={{ fontSize: '2em' }}
                 >{p === undefined ? '-' : p === 999 ? '?' : p}</Button>
               </Col>
             ))}
-            {isCal && (
+            {isCal && isValid && (
               <Col className="p-0 d-flex justify-content-center align-items-center" style={{ height: '10vh' }}>
-                  <h1 className="d-flex text-success display-3">
+                  <h1 className="d-flex display-3 text-success">
                     {this.calAvg(selected_point)}
                   </h1>
               </Col>
