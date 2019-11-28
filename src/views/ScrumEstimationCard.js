@@ -45,8 +45,9 @@ class ScrumEstimationCard extends Component {
 
   playNewRound = () => {
     let { histories, selected_point } = this.state;
-    const idxs = selected_point.map(p => points.indexOf(p));
-    const isValid = _.max(idxs) - _.min(idxs) < 3;
+    const valid_points = _.filter(selected_point, p => p !== 999);
+    const idxs = valid_points.map(p => points.indexOf(p));
+    const isValid = (_.max(idxs) || 0) - (_.min(idxs) || 0) < 3;
     if (isValid && selected_point.indexOf(undefined) === -1) {
       histories.push(selected_point);
     }
@@ -74,7 +75,7 @@ class ScrumEstimationCard extends Component {
   calAvg = (points) => {
     const valid_points = _.filter(points, p => p !== 999);
     const total = _.sum(valid_points);
-    return Math.round(total / valid_points.length);
+    return Math.round(total / valid_points.length) || 0;
   }
   
   componentDidMount = () => {
@@ -88,8 +89,9 @@ class ScrumEstimationCard extends Component {
   render() {
     const { points, number_of_players, histories, selected_point, open } = this.state;
     const isCal = selected_point.indexOf(undefined) === -1;
-    const idxs = selected_point.map(p => points.indexOf(p));
-    const isValid = _.max(idxs) - _.min(idxs) < 3;
+    const valid_points = _.filter(selected_point, p => p !== 999);
+    const idxs = valid_points.map(p => points.indexOf(p));
+    const isValid = (_.max(idxs) || 0) - (_.min(idxs) || 0) < 3;
     if (isCal && !isValid) {
       toastr.error("Invalid Points Set")
     }
@@ -125,7 +127,9 @@ class ScrumEstimationCard extends Component {
         </Row>
         {/* Welcome Panel for first visited */}
         <Row className="mb-3">
-          <label className="text-secondary">Change number of players</label>
+          <Col xs="12">
+            <label className="text-secondary">Change number of players</label>
+          </Col>
           <Col xs="8" className="px-0">
             <Select 
               options={members_option}
@@ -147,7 +151,7 @@ class ScrumEstimationCard extends Component {
             {!(isCal && isValid) && selected_point.map((p, idx) => (
               <Col key={idx} className="p-0" style={{ height: '10vh' }}>
                 <Button 
-                  theme={ !isValid && isCal && (p === _.min(selected_point) || p === _.max(selected_point)) ? 'danger': 'secondary' } disabled squared block className="h-100 border-light"
+                  theme={ !isValid && isCal && (p === _.min(valid_points) || p === _.max(valid_points)) ? 'danger': 'secondary' } disabled squared block className="h-100 border-light"
                   style={{ fontSize: '2em' }}
                 >{p === undefined ? '-' : p === 999 ? '?' : p}</Button>
               </Col>
