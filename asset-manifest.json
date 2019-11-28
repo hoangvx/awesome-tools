@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/awesome-tools/static/css/main.e07b6bea.chunk.css",
-    "main.js": "/awesome-tools/static/js/main.45f8363a.chunk.js",
-    "main.js.map": "/awesome-tools/static/js/main.45f8363a.chunk.js.map",
+    "main.js": "/awesome-tools/static/js/main.a3fb3e34.chunk.js",
+    "main.js.map": "/awesome-tools/static/js/main.a3fb3e34.chunk.js.map",
     "runtime-main.js": "/awesome-tools/static/js/runtime-main.d7881172.js",
     "runtime-main.js.map": "/awesome-tools/static/js/runtime-main.d7881172.js.map",
     "static/css/2.10523291.chunk.css": "/awesome-tools/static/css/2.10523291.chunk.css",
-    "static/js/2.4c8a302f.chunk.js": "/awesome-tools/static/js/2.4c8a302f.chunk.js",
-    "static/js/2.4c8a302f.chunk.js.map": "/awesome-tools/static/js/2.4c8a302f.chunk.js.map",
+    "static/js/2.438ab063.chunk.js": "/awesome-tools/static/js/2.438ab063.chunk.js",
+    "static/js/2.438ab063.chunk.js.map": "/awesome-tools/static/js/2.438ab063.chunk.js.map",
     "index.html": "/awesome-tools/index.html",
-    "precache-manifest.c3b746d11a969423ed00c04ed14421de.js": "/awesome-tools/precache-manifest.c3b746d11a969423ed00c04ed14421de.js",
+    "precache-manifest.a9b380d6d8e34be005f8c2ec850e7c09.js": "/awesome-tools/precache-manifest.a9b380d6d8e34be005f8c2ec850e7c09.js",
     "service-worker.js": "/awesome-tools/service-worker.js",
     "static/css/2.10523291.chunk.css.map": "/awesome-tools/static/css/2.10523291.chunk.css.map",
     "static/css/main.e07b6bea.chunk.css.map": "/awesome-tools/static/css/main.e07b6bea.chunk.css.map"
@@ -17,8 +17,8 @@
   "entrypoints": [
     "static/js/runtime-main.d7881172.js",
     "static/css/2.10523291.chunk.css",
-    "static/js/2.4c8a302f.chunk.js",
+    "static/js/2.438ab063.chunk.js",
     "static/css/main.e07b6bea.chunk.css",
-    "static/js/main.45f8363a.chunk.js"
+    "static/js/main.a3fb3e34.chunk.js"
   ]
 }
