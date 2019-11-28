@@ -57,20 +57,21 @@ class ScrumEstimationCard extends Component {
     toastr.info(`Number of player's defaut is set to ${this.state.number_of_players}`);
   }
 
+  
+  calAvg = (points) => {
+    const valid_points = _.filter(points, p => p !== 999);
+    const total = _.sum(valid_points);
+    return Math.round(total / valid_points.length);
+  }
+  
   componentDidMount = () => {
+    document.title = 'Estimation Card | Awesome Tools';
     const number_of_players = Number(Cookies.get(DEFAULT_NUMBER_OF_PLAYPER)) || 4;
     this.setState({ 
       number_of_players,
       selected_point: Array(Number(number_of_players)).fill(undefined),
     })
   }
-
-  calAvg = (points) => {
-    const valid_points = _.filter(points, p => p !== 999);
-    const total = _.sum(valid_points);
-    return Math.round(total / valid_points.length);
-  }
-
   render() {
     const { points, number_of_players, histories, selected_point, open } = this.state;
     const isCal = selected_point.indexOf(undefined) === -1;
@@ -81,7 +82,7 @@ class ScrumEstimationCard extends Component {
             <h1 className="text-info">Estimations Card</h1>
           </Col>
           <Col xs="2" className="mt-4 px-0 d-flex justify-content-end align-items-center">
-            <Button outline theme="light" size="sm" onClick={() => this.setState({ open: true })}>?</Button>
+            <Button outline theme="secondary" size="sm" onClick={() => this.setState({ open: true })}>?</Button>
             <Modal className="modal-dialog-centered" open={open} toggle={() => this.setState({ open: !open })}>
               <ModalHeader>How To Use!</ModalHeader>
               <ModalBody>
