@@ -12,6 +12,7 @@ import {
 import './assets/index.scss';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "shards-ui/dist/css/shards.min.css";
+import "toastr/build/toastr.min.css";
 
 import { MasterLayout } from './components/layouts';
 import ErrorPage from './views/ErrorPage';

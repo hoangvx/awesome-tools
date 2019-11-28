@@ -19,6 +19,7 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.2.0",
     "shards-react": "^1.0.3",
+    "toastr": "^2.1.4",
     "uuid": "^3.3.3"
   },
   "scripts": {

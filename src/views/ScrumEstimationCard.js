@@ -3,10 +3,15 @@ import {
   Container, Row, Col,
   Button,
   FormInput,
-  ListGroup,
-  ListGroupItem,
+  InputGroup, InputGroupAddon,
+  ListGroup, ListGroupItem,
   Modal, ModalBody, ModalHeader
 } from 'shards-react';
+
+import Cookies from 'js-cookie';
+import toastr from 'toastr';
+
+const DEFAULT_NUMBER_OF_PLAYPER = 'dnop';
 
 const points = [
   0, 1, 2, 3, 5,
@@ -21,7 +26,7 @@ class ScrumEstimationCard extends Component {
       points,
       number_of_players: 4,
       histories: [],
-      selected_point: [undefined, undefined, undefined],
+      selected_point: [undefined, undefined, undefined, undefined],
       open: false
     }
   }
@@ -46,10 +51,22 @@ class ScrumEstimationCard extends Component {
     }
   }
 
+  setDefault = () => {
+    Cookies.set(DEFAULT_NUMBER_OF_PLAYPER, this.state.number_of_players);
+    toastr.info(`Number of player's defaut is set to ${this.state.number_of_players}`);
+  }
+
+  componentDidMount = () => {
+    const number_of_players = Number(Cookies.get(DEFAULT_NUMBER_OF_PLAYPER)) || 4;
+    this.setState({ 
+      number_of_players,
+      selected_point: Array(Number(number_of_players)).fill(undefined),
+    })
+  }
+
   render() {
     const { points, number_of_players, histories, selected_point, open } = this.state;
     const isCal = selected_point.indexOf(undefined) === -1;
-    
     return (
       <Container>
         <Row>
@@ -84,27 +101,37 @@ class ScrumEstimationCard extends Component {
         <Row className="mb-3">
           <Col xs="12" className="px-0">
             <label className="text-secondary">Change number of players</label>
-            <FormInput
-              type="number"
-              value={number_of_players}
-              onChange={({ target: { value: number_of_players } }) => this.setState({ number_of_players, selected_point: Array(Number(number_of_players)).fill(undefined) })}
-            />
+            <InputGroup>
+              <FormInput
+                type="number"
+                value={number_of_players}
+                onChange={({ target: { value: number_of_players } }) => this.setState({ number_of_players, selected_point: Array(Number(number_of_players)).fill(undefined) })}
+              />
+              <InputGroupAddon type="append">
+                <Button theme="light" onClick={() => this.setDefault()}>Set As Default</Button>
+              </InputGroupAddon>
+            </InputGroup>
           </Col>
         </Row>
-        <Row className="mb-3">
-          {!isCal && selected_point.map((p, idx) => (
-            <Col key={idx} className="p-0" style={{ height: '10vh' }}>
-              <Button theme="light" disabled squared block className="h-100">{p === undefined ? '-' : p}</Button>
-            </Col>
-          ))}
-          {isCal && (
-            <Col className="p-0 d-flex justify-content-center align-items-center" style={{ height: '10vh' }}>
-                <h1 className="d-flex text-success display-3">
-                  {Math.round(selected_point.reduce((a,b) => a + b, 0) / number_of_players)}
-                </h1>
-            </Col>
-          )}
-        </Row>
+        { number_of_players && (
+          <Row className="mb-3">
+            {!isCal && selected_point.map((p, idx) => (
+              <Col key={idx} className="p-0" style={{ height: '10vh' }}>
+                <Button 
+                  theme="light" disabled squared block className="h-100"
+                  style={{ fontSize: '2em' }}
+                >{p === undefined ? '-' : p}</Button>
+              </Col>
+            ))}
+            {isCal && (
+              <Col className="p-0 d-flex justify-content-center align-items-center" style={{ height: '10vh' }}>
+                  <h1 className="d-flex text-success display-3">
+                    {Math.round(selected_point.reduce((a,b) => a + b, 0) / number_of_players)}
+                  </h1>
+              </Col>
+            )}
+          </Row>
+        )}
         <Row className="mb-3">
           { points.map((p, idx) => (
             <Col key={idx} xs="4" className="px-0 border border-light" style={{ height: '10vh' }}>
