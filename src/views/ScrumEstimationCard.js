@@ -10,13 +10,14 @@ import {
 
 import Cookies from 'js-cookie';
 import toastr from 'toastr';
+import _ from 'lodash';
 
 const DEFAULT_NUMBER_OF_PLAYPER = 'dnop';
 
 const points = [
   0, 1, 2, 3, 5,
   8, 13, 21, 34,
-  55, 89, 144
+  55, 89, 999
 ]
 
 class ScrumEstimationCard extends Component {
@@ -64,6 +65,12 @@ class ScrumEstimationCard extends Component {
     })
   }
 
+  calAvg = (points) => {
+    const valid_points = _.filter(points, p => p !== 999);
+    const total = _.sum(valid_points);
+    return Math.round(total / valid_points.length);
+  }
+
   render() {
     const { points, number_of_players, histories, selected_point, open } = this.state;
     const isCal = selected_point.indexOf(undefined) === -1;
@@ -71,9 +78,9 @@ class ScrumEstimationCard extends Component {
       <Container>
         <Row>
           <Col xs="10" className="mt-4 px-0">
-            <h1 className="text-info">Point Card</h1>
+            <h1 className="text-info">Estimations Card</h1>
           </Col>
-          <Col xs="2" className="mt-4 px-0 d-flex justify-content-center align-items-center">
+          <Col xs="2" className="mt-4 px-0 d-flex justify-content-end align-items-center">
             <Button outline theme="light" size="sm" onClick={() => this.setState({ open: true })}>?</Button>
             <Modal className="modal-dialog-centered" open={open} toggle={() => this.setState({ open: !open })}>
               <ModalHeader>How To Use!</ModalHeader>
@@ -120,13 +127,13 @@ class ScrumEstimationCard extends Component {
                 <Button 
                   theme="light" disabled squared block className="h-100"
                   style={{ fontSize: '2em' }}
-                >{p === undefined ? '-' : p}</Button>
+                >{p === undefined ? '-' : p === 999 ? '?' : p}</Button>
               </Col>
             ))}
             {isCal && (
               <Col className="p-0 d-flex justify-content-center align-items-center" style={{ height: '10vh' }}>
                   <h1 className="d-flex text-success display-3">
-                    {Math.round(selected_point.reduce((a,b) => a + b, 0) / number_of_players)}
+                    {this.calAvg(selected_point)}
                   </h1>
               </Col>
             )}
@@ -155,10 +162,10 @@ class ScrumEstimationCard extends Component {
                 <ListGroupItem className="d-flex" key={idx}>
                   <Row className="w-100">
                   { h.map((p, i) => (
-                    <Col className="d-flex justify-content-center" key={i}>{p}</Col>
+                    <Col className="d-flex justify-content-center" key={i}>{p === 999 ? '?' : p}</Col>
                   )) }
                   <Col className="d-flex justify-content-center text-success">
-                    <strong>{Math.round(h.reduce((a,b) => a + b, 0) / number_of_players)}</strong>
+                    <strong>{this.calAvg(h)}</strong>
                   </Col>
                   </Row>
                 </ListGroupItem>
