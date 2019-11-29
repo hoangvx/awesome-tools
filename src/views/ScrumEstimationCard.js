@@ -4,9 +4,10 @@ import {
   Button,
   ListGroup, ListGroupItem,
   Modal, ModalBody, ModalHeader,
+  FormSelect
 } from 'shards-react';
-
-import Select from 'react-select';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCog, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 import Cookies from 'js-cookie';
 import toastr from 'toastr';
@@ -20,16 +21,13 @@ const points = [
   55, 89, 999
 ]
 
-const members_option = [
-  { value: 2, label: '2' },
-  { value: 3, label: '3' },
-  { value: 4, label: '4' },
-  { value: 5, label: '5' },
-  { value: 6, label: '6' },
-  { value: 7, label: '7' },
-  { value: 8, label: '8' },
-  { value: 9, label: '9' }
-]
+const members_option = [2,3,4,5,6,7,8,9]
+
+toastr.options = {
+  positionClass: 'toast-top-full-width',
+  progressBar: true,
+  timeOut: 1000
+}
 
 class ScrumEstimationCard extends Component {
   constructor(props) {
@@ -39,20 +37,22 @@ class ScrumEstimationCard extends Component {
       number_of_players: members_option[2],
       histories: [],
       selected_point: [undefined, undefined, undefined, undefined],
-      open: false
+      valid_points: [],
+      isReady: false,
+      openInfo: false,
+      openSetting: false,
     }
   }
 
   playNewRound = () => {
-    let { histories, selected_point } = this.state;
-    const valid_points = _.filter(selected_point, p => p !== 999);
-    const idxs = valid_points.map(p => points.indexOf(p));
-    const isValid = (_.max(idxs) || 0) - (_.min(idxs) || 0) < 3;
-    if (isValid && selected_point.indexOf(undefined) === -1) {
+    let { histories, selected_point, isReady, isValid } = this.state;
+    if (isValid && isReady) {
       histories.push(selected_point);
     }
     this.setState({
-      selected_point: Array(Number(this.state.number_of_players.value)).fill(undefined),
+      selected_point: Array(Number(this.state.number_of_players)).fill(undefined),
+      isValid: false,
+      isReady: false,
       histories
     })
   }
@@ -62,13 +62,20 @@ class ScrumEstimationCard extends Component {
     const idx = selected_point.indexOf(undefined);
     if (idx !== -1) {
       selected_point[idx] = value;
-      this.setState({ selected_point });
+      const isReady = selected_point.indexOf(undefined) === -1;
+      const valid_points = _.filter(selected_point, p => p !== 999 && p !== undefined);
+      const selected_idxs = valid_points.map(p => points.indexOf(p));
+      const isValid = (_.max(selected_idxs) || 0) - (_.min(selected_idxs) || 0) < 3;
+      if (isReady && !isValid) {
+        toastr.error('Invalid Points Set!!!');
+      }
+      this.setState({ selected_point, valid_points, isReady, isValid });
     }
   }
 
   setDefault = () => {
-    Cookies.set(DEFAULT_NUMBER_OF_PLAYPER, this.state.number_of_players.value);
-    toastr.info(`Number of player's defaut is set to ${this.state.number_of_players.value}`);
+    Cookies.set(DEFAULT_NUMBER_OF_PLAYPER, this.state.number_of_players);
+    toastr.info(`Number of player's defaut is set to ${this.state.number_of_players}`);
   }
 
   
@@ -82,28 +89,31 @@ class ScrumEstimationCard extends Component {
     document.title = 'Estimation Card | Awesome Tools';
     const number_of_players = Number(Cookies.get(DEFAULT_NUMBER_OF_PLAYPER)) || 4;
     this.setState({ 
-      number_of_players: { value: number_of_players, label: number_of_players },
+      number_of_players: number_of_players,
       selected_point: Array(Number(number_of_players)).fill(undefined),
     })
   }
   render() {
-    const { points, number_of_players, histories, selected_point, open } = this.state;
-    const isCal = selected_point.indexOf(undefined) === -1;
-    const valid_points = _.filter(selected_point, p => p !== 999);
-    const idxs = valid_points.map(p => points.indexOf(p));
-    const isValid = (_.max(idxs) || 0) - (_.min(idxs) || 0) < 3;
-    if (isCal && !isValid) {
-      toastr.error("Invalid Points Set")
-    }
+    const { 
+      points, number_of_players, histories, 
+      selected_point, valid_points, 
+      isReady, isValid,
+      openInfo, openSetting
+    } = this.state;
     return (
       <Container>
         <Row>
           <Col xs="10" className="mt-4 px-0">
-            <h1 className="text-info">Estimations Card</h1>
+            <h3 className="text-info">Estimations Card</h3>
           </Col>
-          <Col xs="2" className="mt-4 px-0 d-flex justify-content-end align-items-center">
-            <Button outline theme="secondary" size="sm" onClick={() => this.setState({ open: true })}>?</Button>
-            <Modal className="modal-dialog-centered" open={open} toggle={() => this.setState({ open: !open })}>
+          <Col xs="2" className="mt-4 px-0 d-flex justify-content-end align-items-start">
+            <FontAwesomeIcon icon={faCog} className="mx-2" onClick={() => this.setState({ openSetting: true })}/>  
+            <Modal className="modal-dialog-centered" open={openSetting} toggle={() => this.setState({ openSetting: !openSetting })}>
+              <ModalHeader>Settings</ModalHeader>
+              <ModalBody>Coming Soon!!!</ModalBody>
+            </Modal>
+            <FontAwesomeIcon icon={faInfoCircle} className="ml-2" onClick={() => this.setState({ openInfo: true })}/>  
+            <Modal className="modal-dialog-centered" open={openInfo} toggle={() => this.setState({ openInfo: !openInfo })}>
               <ModalHeader>How To Use!</ModalHeader>
               <ModalBody>
                 <span>
@@ -127,36 +137,35 @@ class ScrumEstimationCard extends Component {
         </Row>
         {/* Welcome Panel for first visited */}
         <Row className="mb-3">
-          <Col xs="12">
+          <Col xs="12 p-0">
             <label className="text-secondary">Change number of players</label>
           </Col>
           <Col xs="8" className="px-0">
-            <Select 
-              options={members_option}
-              value={ number_of_players }
-              onChange={
-                number_of_players => this.setState(
-                  {
-                    number_of_players,
-                    selected_point: Array(Number(number_of_players.value)).fill(undefined),
-                  })
-              }/>
+            <FormSelect
+              value={number_of_players}
+              onChange={({ target: { value: number_of_players }}) => this.setState({ number_of_players })}
+              style={{ fontSize: '16px' }}>
+              {members_option.map((o, key) => (
+                <option key={key} value={o}>{o}</option>
+              ))}
+            </FormSelect>
           </Col>
           <Col xs="4" className="px-0">
-            <Button block theme="light" onClick={() => this.setDefault()}>Save</Button>
+            <Button block outline theme="light" onClick={() => this.setDefault()}>Save</Button>
           </Col>
         </Row>
         { number_of_players && (
           <Row className="mb-3">
-            {!(isCal && isValid) && selected_point.map((p, idx) => (
+            {!(isReady && isValid) && selected_point.map((p, idx) => (
               <Col key={idx} className="p-0" style={{ height: '10vh' }}>
                 <Button 
-                  theme={ !isValid && isCal && (p === _.min(valid_points) || p === _.max(valid_points)) ? 'danger': 'secondary' } disabled squared block className="h-100 border-light"
+                  theme={ !isValid && isReady && (p === _.min(valid_points) || p === _.max(valid_points)) ? 'danger': 'secondary' } 
+                  disabled squared block className="h-100 border-light"
                   style={{ fontSize: '2em' }}
                 >{p === undefined ? '-' : p === 999 ? '?' : p}</Button>
               </Col>
             ))}
-            {isCal && isValid && (
+            {isReady && isValid && (
               <Col className="p-0 d-flex justify-content-center align-items-center" style={{ height: '10vh' }}>
                   <h1 className="d-flex display-3 text-success">
                     {this.calAvg(selected_point)}
