@@ -13,6 +13,8 @@ import Cookies from 'js-cookie';
 import toastr from 'toastr';
 import _ from 'lodash';
 
+import Timer from '../components/timer/Timer';
+
 const DEFAULT_OPTIONS = 'srumpointcaloptions';
 
 const points = [
@@ -342,6 +344,11 @@ class ScrumEstimationCard extends Component {
               </ModalBody>
             </Modal>
           </Col>
+        </Row>
+        <Row>
+          {/* <Col>
+            <Timer />
+          </Col> */}
         </Row>
         { number_of_players && (
           <Row className="mb-3">
