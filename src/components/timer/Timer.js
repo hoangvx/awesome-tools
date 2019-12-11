@@ -59,12 +59,12 @@ class Timer extends Component {
   }
 }
 
-CountDown.propTypes = {
+Timer.propTypes = {
   autoStart: PropTypes.bool,
   
 }
 
-CountDown.defaultProps = {
+Timer.defaultProps = {
   auto: true
 };
 

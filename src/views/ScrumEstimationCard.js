@@ -1,21 +1,21 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { 
   Container, Row, Col,
   Button,
   ListGroup, ListGroupItem,
   Modal, ModalBody, ModalHeader, ModalFooter,
-  FormSelect, FormRadio
+  FormSelect, FormCheckbox
 } from 'shards-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCog, faInfoCircle, faStar } from '@fortawesome/free-solid-svg-icons';
+import { faCog, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 import Cookies from 'js-cookie';
 import toastr from 'toastr';
 import _ from 'lodash';
 
-import Timer from '../components/timer/Timer';
+// import Timer from '../components/timer/Timer';
 
-const DEFAULT_OPTIONS = 'srumpointcaloptions';
+const DEFAULT_OPTIONS = 'estimation-settings';
 
 const points = [
   0, 1, 2, 3, 5,
@@ -33,12 +33,7 @@ toastr.options = {
 
 const default_options = {
   number_of_players: 4,
-  keyboardColorSetting: 'primary',
-  buttonColorSetting: 'primary',
-  pointColorSetting: 'secondary',
-  keyboardColor: 'primary',
-  buttonColor: 'primary',
-  pointColor: 'secondary',
+  darkMode: false,
 }
 
 class ScrumEstimationCard extends Component {
@@ -53,12 +48,7 @@ class ScrumEstimationCard extends Component {
       isReady: false,
       openInfo: false,
       openSetting: false,
-      keyboardColorSetting: 'primary',
-      buttonColorSetting: 'primary',
-      pointColorSetting: 'secondary',
-      keyboardColor: 'primary',
-      buttonColor: 'primary',
-      pointColor: 'secondary',
+      darkMode: false,
     }
   }
 
@@ -93,22 +83,24 @@ class ScrumEstimationCard extends Component {
 
   setDefault = () => {
     const options = {
-      keyboardColor: this.state.keyboardColorSetting,
-      buttonColor: this.state.buttonColorSetting,
-      pointColor: this.state.pointColorSetting,
-      keyboardColorSetting: this.state.keyboardColorSetting,
-      buttonColorSetting: this.state.buttonColorSetting,
-      pointColorSetting: this.state.pointColorSetting,
+      darkMode: this.state.darkMode,
       number_of_players: this.state.number_of_players,
     }
 
     Cookies.set(DEFAULT_OPTIONS, options);
-    toastr.info(`Number of player's defaut is set to ${this.state.number_of_players}`);
+    toastr.success(`Number of player's defaut is set to ${this.state.number_of_players}`);
     this.setState({
       ...options,
-      openSetting: false, 
+      openSetting: false,
     });
     this.playNewRound();
+  }
+
+  settingNumber = (number_of_players) => {
+    this.setState({
+      number_of_players,
+      selected_point: Array(Number(number_of_players)).fill(undefined),
+    })
   }
 
   
@@ -132,13 +124,28 @@ class ScrumEstimationCard extends Component {
       selected_point, valid_points, 
       isReady, isValid,
       openInfo, openSetting,
-      keyboardColor, buttonColor, pointColor
+      darkMode
     } = this.state;
+
+    const keyBoardClass = [
+      'd-flex justify-content-center align-items-center',
+      'px-0',
+      'text-white',
+      ...[
+        darkMode ? 'bg-dark' : 'bg-primary'
+      ]
+    ].join(' ');
+    const startBtnTheme = darkMode ? 'dark' : 'primary';
+    const pointBtnTheme = darkMode ? 'secondary' : 'light';
+    let adjSize = number_of_players > 6 ? 3 : 4;
+    adjSize = number_of_players % 2 === 0 ? 6 : adjSize;
+    adjSize = number_of_players % 3 === 0 ? 4 : adjSize;
+    adjSize = number_of_players % 4 === 0 ? 3 : adjSize;
     return (
       <Container>
         <Row>
           <Col xs="10" className="mt-4 px-0">
-            <h3 className="text-info">Estimations Card</h3>
+            <h3 className={ darkMode ? 'text-dark' : 'text-primary' }>Estimations Card</h3>
           </Col>
           <Col xs="2" className="mt-4 px-0 d-flex justify-content-end align-items-start">
             <FontAwesomeIcon icon={faCog} className="mx-2" onClick={() => this.setState({ openSetting: true })}/>  
@@ -146,175 +153,24 @@ class ScrumEstimationCard extends Component {
               <ModalHeader>Settings</ModalHeader>
               <ModalBody>
                 <Row form>
-                  <Col sm="6">
+                  <Col sm="6" className="mb-3">
                     <label htmlFor="numberOfPlayers">Number of players</label>
                     <FormSelect
                       value={number_of_players}
-                      onChange={({ target: { value: number_of_players }}) => this.setState({ number_of_players })}
+                      onChange={({ target: { value: number_of_players }}) => this.settingNumber(number_of_players)}
                       style={{ fontSize: '16px' }}>
                       {members_option.map((o, key) => (
                         <option key={key} value={o}>{o}</option>
                       ))}
                     </FormSelect>
                   </Col>
-                  <Col sm="6">
-                    <p className="mb-2 mt-2">Points color:</p>
-                    <FormRadio
-                      inline
-                      name="pointColor"
-                      checked={this.state.pointColorSetting === "primary"}
-                      onChange={() => {
-                        this.setState({ pointColorSetting: 'primary' });
-                      }}
-                    >
-                      <FontAwesomeIcon className="text-primary" icon={faStar}/>
-                    </FormRadio>
-                    <FormRadio
-                      inline
-                      name="pointColor"
-                      checked={this.state.pointColorSetting === "warning"}
-                      onChange={() => {
-                        this.setState({ pointColorSetting: 'warning' });
-                      }}
-                    >
-                      <FontAwesomeIcon className="text-warning" icon={faStar}/>
-                    </FormRadio>
-                    <FormRadio
-                      inline
-                      name="pointColor"
-                      checked={this.state.pointColorSetting === "success"}
-                      onChange={() => {
-                        this.setState({ pointColorSetting: 'success' });
-                      }}
-                    >
-                      <FontAwesomeIcon className="text-success" icon={faStar}/>
-                    </FormRadio>
-                    <FormRadio
-                      inline
-                      name="pointColor"
-                      checked={this.state.pointColorSetting === "dark"}
-                      onChange={() => {
-                        this.setState({ pointColorSetting: 'dark' });
-                      }}
-                    >
-                      <FontAwesomeIcon className="text-dark" icon={faStar}/>
-                    </FormRadio>
-                    <FormRadio
-                      inline
-                      name="pointColor"
-                      checked={this.state.pointColorSetting === "secondary"}
-                      onChange={() => {
-                        this.setState({ pointColorSetting: 'secondary' });
-                      }}
-                    >
-                      <FontAwesomeIcon className="text-secondary" icon={faStar}/>
-                    </FormRadio>
-                  </Col>
-                  <Col sm="6">
-                    <p className="mb-2 mt-2">Card (keyboard) color:</p>
-                    <FormRadio
-                      inline
-                      name="keyboardColor"
-                      checked={this.state.keyboardColorSetting === "primary"}
-                      onChange={() => {
-                        this.setState({ keyboardColorSetting: 'primary' });
-                      }}
-                    >
-                      <FontAwesomeIcon className="text-primary" icon={faStar}/>
-                    </FormRadio>
-                    <FormRadio
-                      inline
-                      name="keyboardColor"
-                      checked={this.state.keyboardColorSetting === "warning"}
-                      onChange={() => {
-                        this.setState({ keyboardColorSetting: 'warning' });
-                      }}
-                    >
-                      <FontAwesomeIcon className="text-warning" icon={faStar}/>
-                    </FormRadio>
-                    <FormRadio
-                      inline
-                      name="keyboardColor"
-                      checked={this.state.keyboardColorSetting === "success"}
-                      onChange={() => {
-                        this.setState({ keyboardColorSetting: 'success' });
-                      }}
-                    >
-                      <FontAwesomeIcon className="text-success" icon={faStar}/>
-                    </FormRadio>
-                    <FormRadio
-                      inline
-                      name="keyboardColor"
-                      checked={this.state.keyboardColorSetting === "dark"}
-                      onChange={() => {
-                        this.setState({ keyboardColorSetting: 'dark' });
-                      }}
-                    >
-                      <FontAwesomeIcon className="text-dark" icon={faStar}/>
-                    </FormRadio>
-                    <FormRadio
-                      inline
-                      name="keyboardColor"
-                      checked={this.state.keyboardColorSetting === "secondary"}
-                      onChange={() => {
-                        this.setState({ keyboardColorSetting: 'secondary' });
-                      }}
-                    >
-                      <FontAwesomeIcon className="text-secondary" icon={faStar}/>
-                    </FormRadio>
-                  </Col>
-                  <Col sm="6">
-                    <p className="mb-2 mt-2">Button color:</p>
-                    <FormRadio
-                      inline
-                      name="buttonColor"
-                      checked={this.state.buttonColorSetting === "primary"}
-                      onChange={() => {
-                        this.setState({ buttonColorSetting: 'primary' });
-                      }}
-                    >
-                      <FontAwesomeIcon className="text-primary" icon={faStar}/>
-                    </FormRadio>
-                    <FormRadio
-                      inline
-                      name="buttonColor"
-                      checked={this.state.buttonColorSetting === "warning"}
-                      onChange={() => {
-                        this.setState({ buttonColorSetting: 'warning' });
-                      }}
-                    >
-                      <FontAwesomeIcon className="text-warning" icon={faStar}/>
-                    </FormRadio>
-                    <FormRadio
-                      inline
-                      name="buttonColor"
-                      checked={this.state.buttonColorSetting === "success"}
-                      onChange={() => {
-                        this.setState({ buttonColorSetting: 'success' });
-                      }}
-                    >
-                      <FontAwesomeIcon className="text-success" icon={faStar}/>
-                    </FormRadio>
-                    <FormRadio
-                      inline
-                      name="buttonColor"
-                      checked={this.state.buttonColorSetting === "dark"}
-                      onChange={() => {
-                        this.setState({ buttonColorSetting: 'dark' });
-                      }}
-                    >
-                      <FontAwesomeIcon className="text-dark" icon={faStar}/>
-                    </FormRadio>
-                    <FormRadio
-                      inline
-                      name="buttonColor"
-                      checked={this.state.buttonColorSetting === "secondary"}
-                      onChange={() => {
-                        this.setState({ buttonColorSetting: 'secondary' });
-                      }}
-                    >
-                      <FontAwesomeIcon className="text-secondary" icon={faStar}/>
-                    </FormRadio>
+                  <Col sm="6" className="mb-3">
+                    <FormCheckbox
+                      toggle
+                      checked={darkMode}
+                      onChange={() => this.setState({ darkMode: !darkMode })}>
+                      Enable Dark Mode
+                    </FormCheckbox>
                   </Col>
                 </Row>
                 <ModalFooter className="px-0">
@@ -351,15 +207,20 @@ class ScrumEstimationCard extends Component {
           </Col> */}
         </Row>
         { number_of_players && (
-          <Row className="mb-3">
+          <Row className="mb-3 justify-content-center align-items-center">
             {!(isReady && isValid) && selected_point.map((p, idx) => (
-              <Col key={idx} className="p-0" style={{ height: '10vh' }}>
-                <Button 
-                  theme={ !isValid && isReady && (p === _.min(valid_points) || p === _.max(valid_points)) ? 'danger': pointColor } 
-                  squared block className="h-100 border-light"
-                  style={{ fontSize: '2em' }}
-                >{p === undefined ? '-' : p === 999 ? '?' : p}</Button>
-              </Col>
+              <Fragment>
+                <Col key={idx}
+                  className="p-0 d-flex"
+                  xs={adjSize} style={{ height: '10vh' }}
+                >
+                  <Button 
+                    theme={ !isValid && isReady && (p === _.min(valid_points) || p === _.max(valid_points)) ? 'danger': pointBtnTheme } 
+                    squared block className="h-100 border-white"
+                    style={{ fontSize: '2em' }}
+                  >{p === undefined ? '-' : p === 999 ? '?' : p}</Button>
+                </Col>
+              </Fragment>
             ))}
             {isReady && isValid && (
               <Col className="p-0 d-flex justify-content-center align-items-center" style={{ height: '10vh' }}>
@@ -372,18 +233,18 @@ class ScrumEstimationCard extends Component {
         )}
         <Row className="mb-3">
           { points.map((p, idx) => (
-            <Col key={idx} xs="4" className="px-0 border border-light" style={{ height: '10vh' }}>
-              <Button 
-                block squared className="h-100" theme={keyboardColor} style={{ fontSize: '2em' }}
-                onClick={() => this.play(p)}>
-                {p === 999 ? '?' : p}
-              </Button>
+            <Col key={idx} xs={4} 
+              style={{ height: '10vh', border: '1px solid #fff' }}
+              className={keyBoardClass}
+              onTouchEnd={() => this.play(p)}
+            >
+              <span className="d-flex" style={{ fontSize: '3em' }}>{p === 999 ? '?' : p}</span>
             </Col>
           )) }
         </Row>
         <Row className="mb-3">
           <Col className="px-0">
-            <Button block theme={buttonColor} size="lg" onClick={() => this.playNewRound()}>Start Over</Button>
+            <Button theme={startBtnTheme} squared block size="lg" onClick={() => this.playNewRound()}>Start Over</Button>
           </Col>
         </Row>
         <Row>
