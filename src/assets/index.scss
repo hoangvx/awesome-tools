@@ -1,3 +1,42 @@
+// model background
 .modal {
   background: rgba(0, 0, 0, .7);
+}
+
+// input shaw off
+.form-control {
+  &.simplebox {
+    border-radius: 0;
+    border-width: 0 0 1px 0;
+    padding: 2px 0;
+
+    &:focus {
+      outline: none;
+      -webkit-box-shadow: none !important;
+      -moz-box-shadow: none !important;
+      box-shadow: none !important;
+    }
+  }
+}
+
+// list
+.list-group .members-item,
+.members-item {
+  padding: 5px 0;
+  margin-bottom: 1px;
+  border-width: 0 0 1px 0;
+  border-radius: 0 !important;
+}
+
+.members-drag {
+  cursor: grabbing;
+}
+
+// CountDown icon
+.countdown-start-icon {
+  position: relative;
+
+  &:hover {
+    cursor: pointer;
+  }
 }

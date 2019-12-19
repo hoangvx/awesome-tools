@@ -25,7 +25,7 @@ function App() {
       <MasterLayout>
         <Switch>
           <Route exact path="/">
-            <Redirect to="/estimation_card" />
+            <Redirect to="/mob" />
           </Route>
           <Route exact path="/mob">
             <MobTimer />
