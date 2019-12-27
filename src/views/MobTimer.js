@@ -7,7 +7,7 @@ import {
   Tooltip,
 } from 'shards-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faRandom, faBars } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faRandom, faBars, faFrog } from '@fortawesome/free-solid-svg-icons';
 import toastr from "toastr";
 import _ from "lodash";
 import { SortableContainer, SortableElement, SortableHandle } from "react-sortable-hoc";
@@ -15,7 +15,7 @@ import arrayMove from "array-move";
 
 import CountDown from '../components/timer/CountDown';
 
-const MobTimeSetting = ({label, value, range: [ min, max ], onSlide }) => (
+const MobTimeSetting = ({label, value, range: [ min, max ], onSlide, ...props }) => (
   <FormGroup>
     <label htmlFor={ `mobTimeSetting${label}` }>
       <strong>{ label }: </strong>
@@ -29,6 +29,7 @@ const MobTimeSetting = ({label, value, range: [ min, max ], onSlide }) => (
       start={[value]}
       range={{ min, max }}
       onSlide={([start, _end]) => onSlide(Number(start))}
+      {...props}
     />
   </FormGroup>
 )
@@ -43,17 +44,21 @@ const SortableListGroupContainer = SortableContainer(({ children }) => {
   )
 });
 
-const SortableListItem = SortableElement(({ member, onDelete }) => {
+const SortableListItem = SortableElement(({ member, onDelete, disabled }) => {
   return (
     <ListGroupItem className="members-item d-flex justify-content-between align-items-center">
       <div>
-        <DragHandle />
+        { member !== 'Rest Time' && <DragHandle /> }
+        { member === 'Rest Time' && <FontAwesomeIcon className="mr-2" icon={faFrog} /> }
         { member }
       </div>
-      <Button theme="link" size="sm"
-        onClick={() => onDelete(member)}>
-        <FontAwesomeIcon className="text-secondary" icon={faTrash}/>
-      </Button>
+      { member !== 'Rest Time' &&
+        <Button theme="link" size="sm"
+          disabled={disabled}
+          onClick={() => onDelete(member)}>
+          <FontAwesomeIcon className="text-secondary" icon={faTrash}/>
+        </Button>
+      }
     </ListGroupItem>
   )
 })
@@ -70,7 +75,8 @@ class MobTimer extends Component {
       },
       name: '',
       enabled_rest_time: false,
-      current_player_index: -1
+      current_player_index: -1,
+      working: false,
     }
   }
 
@@ -146,7 +152,8 @@ class MobTimer extends Component {
     current_player_index = (current_player_index + 1) % (members.length + 1);
 
     this.setState({
-      current_player_index
+      current_player_index,
+      working: true
     })
   }
 
@@ -159,6 +166,7 @@ class MobTimer extends Component {
       interval, members, name,
       current_player_index,
       enabled_rest_time,
+      working,
     } = this.state;
 
     return (
@@ -176,6 +184,7 @@ class MobTimer extends Component {
             </h4>
             <MobTimeSetting
               label="Hours"
+              disabled={working}
               value={interval.hours}
               range={[0, 24]}
               onSlide={hours => this.setState(
@@ -186,6 +195,7 @@ class MobTimer extends Component {
             />
             <MobTimeSetting
               label="Minutes"
+              disabled={working}
               value={interval.minutes}
               range={[0, 59]}
               onSlide={minutes => this.setState(
@@ -196,6 +206,7 @@ class MobTimer extends Component {
             />
             <MobTimeSetting
               label="Seconds"
+              disabled={working}
               value={interval.seconds}
               range={[0, 59]}
               onSlide={seconds => this.setState(
@@ -211,6 +222,7 @@ class MobTimer extends Component {
             <FormGroup>
               <FormCheckbox
                 checked={enabled_rest_time}
+                disabled={working}
                 onChange={() => this.onToggleRestTime()}
               >
                 Rest Time
@@ -239,6 +251,7 @@ class MobTimer extends Component {
             </div>
             <SortableListGroupContainer axis="y"
               useDragHandle
+              disabled={working}
               onSortEnd={position => this.onSortEnd(position)}>
               { members.map((member, index) => (
                 <SortableListItem 
@@ -259,7 +272,7 @@ class MobTimer extends Component {
               />
             </Form>
           </Col>
-          { members.length > 1 && 
+          { _.filter(members, item => item !== 'Rest Time').length > 1 && 
             <CountDown
               title={members[current_player_index]}
               hours={interval.hours}
@@ -269,7 +282,7 @@ class MobTimer extends Component {
               onEnd={() => this.onPlayerEndTurn()}
             />
           }
-          { members.length < 2 && 
+          { _.filter(members, item => item !== 'Rest Time').length < 2 && 
             <Col className="d-flex flex-column justify-content-center align-items-center">
               <h4 className="text-info">To Start Mob Programing</h4>
               <h4 className="text-info">You Need More Than 1 Members </h4>

@@ -68,7 +68,7 @@ class CountDown extends Component {
     const minutes = _.padStart(duration.minutes(), 2, 0);
     const hours = _.padStart(duration.hours(), 2, 0);
     
-    if (duration == 0) {
+    if (duration === 0) {
       this.stop();
     }
 
